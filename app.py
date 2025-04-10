@@ -39,7 +39,6 @@ if st.session_state.tracks:
     st.subheader("🔽 추천된 트랙 리스트")
     for i, track in enumerate(st.session_state.tracks):
         st.markdown(f"### 🎵 {track['name']} - {track['artist']['name']}")
-        st.markdown(f"유사도: {float(track.get('match', 0))*100:.1f}%")
         if track["spotify_id"]:
             st.components.v1.iframe(
                 f"https://open.spotify.com/embed/track/{track['spotify_id']}",
