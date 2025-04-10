@@ -32,7 +32,6 @@ if st.button("트랙 추천"):
 
     for t in tracks:
         spotify_info = search_track_on_spotify(t["name"], t["artist"]["name"])
-        st.write(f"🎧 {t['name']} → Spotify ID: {spotify_info['id']}")
         t["spotify_id"] = spotify_info["id"]
         st.session_state.tracks.append(t)
 
