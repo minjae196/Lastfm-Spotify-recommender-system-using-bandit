@@ -9,7 +9,28 @@ class Recommender:
         self.lastfm = LastFMClient()
         self.previous_ids = set()
         self.recently_recommended = deque(maxlen=3)
+        # recommender.py
+    def recommend_personal_top(self, top_k=10):
+        all_ids = list(self.bandit.rewards.keys())  # ThompsonSampling 기준
+        results = []
+        
+        for item_id in all_ids:
+            score = self.bandit.get_score(item_id)
+            try:
+                name, artist = item_id.split(" - ")
+            except:
+                continue  # 형식이 안 맞는 경우 스킵
 
+            results.append({
+                "id": item_id,
+                "name": name,
+                "artist": {"name": artist},
+                "score": score
+            })
+
+        results.sort(key=lambda x: x["score"], reverse=True)
+        return results[:top_k]
+        
     def gather_candidates(self, track_name, artist_name, tag=None):
         tracks = []
         seen_ids = set()

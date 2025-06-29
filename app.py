@@ -1,5 +1,5 @@
 import streamlit as st
-from bandit.epsilon_greedy import EpsilonGreedy
+from bandit.thompson_sampling import ThompsonSampling
 from recommender import Recommender
 from spotify_player import search_track_on_spotify
 import os
@@ -9,11 +9,11 @@ st.set_page_config(page_title="🎵 추천 시스템", layout="wide")
 st.title("🎧 Last.fm + Spotify Bandit Algorithm 기반 음악 추천 시스템")
 
 if "recommender" not in st.session_state:
-    st.session_state.recommender = Recommender(EpsilonGreedy())
+    st.session_state.recommender = Recommender(ThompsonSampling())
     st.session_state.tracks = []
     st.session_state.feedback = {}
 
-option = st.selectbox("추천 기준을 선택하세요", ["최근 들은 곡", "좋아하는 아티스트", "좋아하는 장르"])
+option = st.selectbox("추천 기준을 선택하세요", ["최근 들은 곡", "좋아하는 아티스트", "좋아하는 장르", "나만의 추천"])
 track_name = artist_name = tag = ""
 
 if option == "최근 들은 곡":
@@ -26,8 +26,13 @@ elif option == "좋아하는 장르":
 
 if st.button("트랙 추천"):
     st.session_state.feedback = {}
-    mode = {"최근 들은 곡": "track", "좋아하는 아티스트": "artist", "좋아하는 장르": "tag"}[option]
-    tracks = st.session_state.recommender.recommend_bulk(mode, track_name, artist_name, tag)
+
+    if option == "나만의 추천":
+        tracks = st.session_state.recommender.recommend_personal_top()
+    else:
+        mode = {"최근 들은 곡": "track", "좋아하는 아티스트": "artist", "좋아하는 장르": "tag"}[option]
+        tracks = st.session_state.recommender.recommend_bulk(mode, track_name, artist_name, tag)
+
     st.session_state.tracks = []
 
     for t in tracks:
